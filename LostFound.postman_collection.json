@@ -1,0 +1,156 @@
+{
+  "info": {
+    "name": "Lost & Found Platform API",
+    "description": "Postman collection for the full-stack Lost & Found project.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    { "key": "baseUrl", "value": "http://localhost:5000/api" },
+    { "key": "token", "value": "" },
+    { "key": "itemId", "value": "" },
+    { "key": "claimId", "value": "" }
+  ],
+  "item": [
+    {
+      "name": "Auth",
+      "item": [
+        {
+          "name": "Register",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"name\": \"Demo User\",\n  \"email\": \"demo@example.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/register", "host": ["{{baseUrl}}"], "path": ["auth", "register"] }
+          }
+        },
+        {
+          "name": "Login",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"email\": \"alice@example.com\",\n  \"password\": \"password123\"\n}" },
+            "url": { "raw": "{{baseUrl}}/auth/login", "host": ["{{baseUrl}}"], "path": ["auth", "login"] }
+          }
+        },
+        {
+          "name": "Me",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/auth/me", "host": ["{{baseUrl}}"], "path": ["auth", "me"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Items",
+      "item": [
+        {
+          "name": "Browse Items",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/items?status=open&page=1&limit=12", "host": ["{{baseUrl}}"], "path": ["items"], "query": [{"key":"status","value":"open"},{"key":"page","value":"1"},{"key":"limit","value":"12"}] }
+          }
+        },
+        {
+          "name": "Get One Item",
+          "request": {
+            "method": "GET",
+            "url": { "raw": "{{baseUrl}}/items/{{itemId}}", "host": ["{{baseUrl}}"], "path": ["items", "{{itemId}}"] }
+          }
+        },
+        {
+          "name": "My Items",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/items/mine", "host": ["{{baseUrl}}"], "path": ["items", "mine"] }
+          }
+        },
+        {
+          "name": "Create Item (no image example)",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "body": {
+              "mode": "formdata",
+              "formdata": [
+                { "key": "itemType", "value": "lost", "type": "text" },
+                { "key": "title", "value": "Black wallet", "type": "text" },
+                { "key": "description", "value": "Black leather wallet lost near the library", "type": "text" },
+                { "key": "category", "value": "Wallet / Bag", "type": "text" },
+                { "key": "location", "value": "Library", "type": "text" },
+                { "key": "eventDate", "value": "2026-09-07", "type": "text" }
+              ]
+            },
+            "url": { "raw": "{{baseUrl}}/items", "host": ["{{baseUrl}}"], "path": ["items"] }
+          }
+        },
+        {
+          "name": "Change Item Status",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"resolved\"\n}" },
+            "url": { "raw": "{{baseUrl}}/items/{{itemId}}/status", "host": ["{{baseUrl}}"], "path": ["items", "{{itemId}}", "status"] }
+          }
+        },
+        {
+          "name": "Delete Item",
+          "request": {
+            "method": "DELETE",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/items/{{itemId}}", "host": ["{{baseUrl}}"], "path": ["items", "{{itemId}}"] }
+          }
+        }
+      ]
+    },
+    {
+      "name": "Claims",
+      "item": [
+        {
+          "name": "Submit Claim",
+          "request": {
+            "method": "POST",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"itemId\": \"{{itemId}}\",\n  \"message\": \"I can identify a private detail about this item.\"\n}" },
+            "url": { "raw": "{{baseUrl}}/claims", "host": ["{{baseUrl}}"], "path": ["claims"] }
+          }
+        },
+        {
+          "name": "My Claims",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/claims/mine", "host": ["{{baseUrl}}"], "path": ["claims", "mine"] }
+          }
+        },
+        {
+          "name": "Claims for Item (owner)",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/claims/item/{{itemId}}", "host": ["{{baseUrl}}"], "path": ["claims", "item", "{{itemId}}"] }
+          }
+        },
+        {
+          "name": "Accept Claim",
+          "request": {
+            "method": "PATCH",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }, { "key": "Content-Type", "value": "application/json" }],
+            "body": { "mode": "raw", "raw": "{\n  \"status\": \"accepted\"\n}" },
+            "url": { "raw": "{{baseUrl}}/claims/{{claimId}}/status", "host": ["{{baseUrl}}"], "path": ["claims", "{{claimId}}", "status"] }
+          }
+        },
+        {
+          "name": "Contact Exchange",
+          "request": {
+            "method": "GET",
+            "header": [{ "key": "Authorization", "value": "Bearer {{token}}" }],
+            "url": { "raw": "{{baseUrl}}/claims/{{claimId}}/contact", "host": ["{{baseUrl}}"], "path": ["claims", "{{claimId}}", "contact"] }
+          }
+        }
+      ]
+    }
+  ]
+}
